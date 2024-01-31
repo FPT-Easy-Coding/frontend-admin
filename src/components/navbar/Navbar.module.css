@@ -1,0 +1,13 @@
+.navbar {
+  @apply w-[100px] h-screen pt-[var(--mantine-spacing-md)] pr-[var(--mantine-spacing-md)] pb-[var(--mantine-spacing-md)] pl-[var(--mantine-spacing-md)] flex flex-col bg-[color:var(--mantine-color-blue-filled)] z-30 fixed top-0 left-0;
+}
+.navbarMain {
+  @apply flex-1 mt-[rem(50px)];
+}
+.link {
+  @apply w-full h-14 rounded-[var(--mantine-radius-md)] flex items-center justify-center text-[color:var(--mantine-color-white)] hover:bg-[color:var(--mantine-color-blue-7)];
+}
+.link[data-active],
+.link[data-active]:hover {
+  @apply shadow-[var(--mantine-shadow-sm)] bg-[color:var(--mantine-color-white)] text-[color:var(--mantine-color-blue-6)];
+}
