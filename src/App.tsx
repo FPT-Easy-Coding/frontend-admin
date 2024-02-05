@@ -3,26 +3,40 @@ import "react-toastify/dist/ReactToastify.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import "@mantine/core/styles.css";
-import PanelRoot from "./pages/DashboardRoot";
-import AllUser from "./pages/admin/all_user/AllUser";
-import { authUser, getAllUser, logoutUser } from "./utils/user/UserUtils";
-import { handleUserAction } from "./utils/admin/User";
+import PanelRoot from "./pages/PanelRoot";
+import { authUser, checkAuth, logoutUser } from "./utils/auth/AuthUtils";
+import Error from "./pages/error/Error";
+import {
+  getUsersList,
+  handleUserDashboardAction,
+} from "./utils/user/UserUtils";
+import { CategoryList } from "./pages/admin/dashboard/category/CategoryList";
+import { getCategoriesList } from "./utils/category/CategoryUtils";
+import { UserList } from "./pages/admin/dashboard/all_user/UserList";
+
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
     action: authUser,
+    errorElement: <Error />,
   },
   {
     path: "/admin/dashboard",
     element: <PanelRoot />,
+    loader: checkAuth,
     children: [
       {
         path: "all-user",
-        element: <AllUser />,
-        loader: getAllUser,
-        action: handleUserAction,
+        element: <UserList />,
+        loader: getUsersList,
+        action: handleUserDashboardAction,
+      },
+      {
+        path: "categories",
+        element: <CategoryList />,
+        loader: getCategoriesList,
       },
     ],
   },

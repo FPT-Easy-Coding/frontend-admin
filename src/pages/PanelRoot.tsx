@@ -6,8 +6,10 @@ function PanelRoot() {
   return (
     <>
       <Navbar />
-      <main className="w-[calc(100%-100px)] ml-[100px] mt-[60px]">
-        <Outlet />
+      <main className="w-[calc(100%-80px)] ml-[80px] mt-[60px]">
+        <div className="w-11/12 mx-auto">
+          <Outlet />
+        </div>
       </main>
     </>
   );
