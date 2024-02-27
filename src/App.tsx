@@ -10,10 +10,11 @@ import {
   getUsersList,
   handleUserDashboardAction,
 } from "./utils/user/UserUtils";
-import { CategoryList } from "./pages/admin/dashboard/category/CategoryList";
 import { getCategoriesList } from "./utils/category/CategoryUtils";
-import { UserList } from "./pages/admin/dashboard/all_user/UserList";
-
+import { UserList } from "./pages/admin/dashboard/all-user/UserList";
+import QuestionBank from "./pages/admin/dashboard/bank/QuestionBank";
+import CategoryList from "./pages/admin/dashboard/category/CategoryList";
+import { action as CategoryAction } from "./pages/admin/dashboard/category/CategoryList";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,11 @@ const router = createBrowserRouter([
         path: "categories",
         element: <CategoryList />,
         loader: getCategoriesList,
+        action: CategoryAction,
+      },
+      {
+        path: "questions-bank",
+        element: <QuestionBank />,
       },
     ],
   },

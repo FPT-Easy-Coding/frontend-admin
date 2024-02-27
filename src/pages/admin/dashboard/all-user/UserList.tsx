@@ -37,7 +37,7 @@ import {
 import { toast } from "react-toastify";
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
-import NewUser from "../../../../components/user_list/NewUser";
+import NewUser from "../../../../components/user-list/NewUser";
 
 interface ActionData {
   success: boolean;
@@ -139,7 +139,6 @@ function sortData(
 export function UserList() {
   const userData = useRef<RowData | null>(null);
   const actionData: ActionData = useActionData() as ActionData;
-  console.log(actionData);
   const data = useLoaderData() as RowData[];
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -342,6 +341,7 @@ export function UserList() {
         opened={opened}
         onClose={close}
         title={"Edit user ID: " + userData?.current?.userId}
+        centered
       >
         <Stack>
           <Form
@@ -427,8 +427,7 @@ export function UserList() {
           <Stack>
             <div className="flex justify-between">
               <Text size="sm">
-                Available <strong>{data.length}</strong> user(s), click on row
-                will let u see details
+                Available <strong>{data.length}</strong> user(s), click on row to interact.
               </Text>
               <Group>
                 <Button

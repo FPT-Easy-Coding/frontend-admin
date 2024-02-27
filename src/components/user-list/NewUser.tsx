@@ -86,6 +86,7 @@ function NewUser({
         opened={isOpen}
         onClose={() => setIsOpen(false)}
         title={"Create New User"}
+        centered
       >
         <Form
           method="post"

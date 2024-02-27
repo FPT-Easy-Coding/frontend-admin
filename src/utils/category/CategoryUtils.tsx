@@ -11,7 +11,6 @@ export async function getCategoriesList() {
       .catch(() => {
         throw new Error("Something went wrong when fetching data");
       });
-    console.log(res.data);
     return res.data;
   } catch (error) {
     return {
