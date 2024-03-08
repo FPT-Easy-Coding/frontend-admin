@@ -37,6 +37,7 @@ import { modals } from "@mantine/modals";
 import { toast } from "react-toastify";
 import { useForm, isNotEmpty } from "@mantine/form";
 import CreateModal from "../modal/category/CreateModal";
+// import EditModal from "../modal/category/EditModal";
 
 export interface RowData {
   categoryId: number;
@@ -145,6 +146,12 @@ function convertDate(date: Date) {
 }
 
 export default function Category() {
+  // const [testCategoryData, setTestCategoryData] = useState<RowData>({
+  //   categoryId: 0,
+  //   categoryName: "",
+  //   createAt: new Date(),
+  //   totalQuiz: 0,
+  // });
   const cateData = useRef<RowData | null>(null);
   const submit = useSubmit();
   const data = useLoaderData() as RowData[];
@@ -163,7 +170,6 @@ export default function Category() {
   const handleRefresh = () => {
     setSortedData([...data]);
   };
-  console.log(data);
   const form = useForm({
     initialValues: {
       categoryName: "",
@@ -236,6 +242,7 @@ export default function Category() {
           leftSection={<IconEdit size={14} />}
           onClick={() => {
             cateData.current = row;
+            // setTestCategoryData(row);
             setEditField(row);
             open();
           }}
@@ -282,6 +289,7 @@ export default function Category() {
           </Stack>
         </Form>
       </Modal>
+      {/* <EditModal opened={opened} close={close} data={testCategoryData} /> */}
       <CreateModal opened={createOpened} close={closeCreate} />
       <div className="mt-[60px]">
         <div className="py-[20px] sticky top-[60px] bg-[--mantine-color-body]">
