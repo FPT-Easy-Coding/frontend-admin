@@ -62,6 +62,7 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 }
 
 const mockdata = [
+  { icon: IconHome2, label: "Dashboard", linkTo: "general" },
   { icon: IconCategory, label: "Categories", linkTo: "categories" },
   { icon: IconUsers, label: "Users", linkTo: "all-user" },
   { icon: IconBrandAsana, label: "Question Bank", linkTo: "questions-bank" },

@@ -1,51 +1,38 @@
-import { useEffect, useRef, useState } from "react";
 import {
   Table,
   UnstyledButton,
   Group,
-  Text,
   Center,
-  TextInput,
   rem,
   keys,
+  Text,
   Button,
-  Stack,
   Menu,
-  Modal,
+  Stack,
+  TextInput,
 } from "@mantine/core";
 import {
-  IconSelector,
-  IconChevronDown,
   IconChevronUp,
-  IconSearch,
-  IconPlus,
-  IconTrash,
+  IconChevronDown,
+  IconSelector,
   IconEdit,
+  IconPlus,
   IconRefresh,
+  IconSearch,
+  IconTrash,
 } from "@tabler/icons-react";
-import classes from "./Category.module.css";
-import {
-  Form,
-  SubmitFunction,
-  useActionData,
-  useLoaderData,
-  useSubmit,
-} from "react-router-dom";
+import { RowData } from "../../pages/admin/bank/QuestionsBank";
+import classes from "./QuestionsBankList.module.css";
 import { useDisclosure } from "@mantine/hooks";
-
-import { modals } from "@mantine/modals";
+import { useState, useEffect } from "react";
+import { useLoaderData, useActionData, useSubmit } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useForm, isNotEmpty } from "@mantine/form";
-import CreateModal from "../modal/category/CreateModal";
 import { convertDate } from "../../utils/convert";
-// import EditModal from "../modal/category/EditModal";
-
-export interface RowData {
-  categoryId: number;
-  categoryName: string;
-  createAt: Date;
-  totalQuiz: number;
-}
+import EditModal, {
+  editQuestionFormAction,
+} from "../modal/question-bank/EditModal";
+import CreateModal from "../modal/question-bank/CreateModal";
+import { deleteModal } from "../modal/question-bank/DeleteModal";
 
 interface ThProps {
   children: React.ReactNode;
@@ -114,41 +101,19 @@ function sortData(
         }
         return valueA.localeCompare(valueB);
       }
-      return 0; // Default to no sorting if data types are not supported
+      return 0;
     }),
     payload.search
   );
 }
-
-const deleteUserModal = (category: RowData, submit: SubmitFunction) =>
-  modals.openConfirmModal({
-    title: "Confirm your deletion",
-    children: (
-      <Text size="sm">
-        Are you sure to delete category:{" "}
-        <strong>{category.categoryName}</strong> ?
-      </Text>
-    ),
-    labels: { confirm: "Confirm", cancel: "Cancel" },
-    onCancel: () => console.log("Cancel"),
-    onConfirm: () => {
-      submit(
-        { id: category.categoryId },
-        {
-          method: "delete",
-        }
-      );
-    },
-  });
-
-export default function Category() {
-  const cateData = useRef<RowData | null>(null);
+function QuestionsBankList() {
   const submit = useSubmit();
   const data = useLoaderData() as RowData[];
   const actionData = useActionData() as {
     success: boolean;
     msg: string;
   };
+  const [editingData, setEditingData] = useState<RowData | null>(null);
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
@@ -160,25 +125,21 @@ export default function Category() {
   const handleRefresh = () => {
     setSortedData([...data]);
   };
-  const form = useForm({
-    initialValues: {
-      categoryName: "",
-    },
-    validate: {
-      categoryName: isNotEmpty("Category name cannot be empty"),
-    },
-  });
 
-  const assignPayload = (data: string) => {
-    return {
-      categoryName: data,
-      id: cateData.current?.categoryId || 0,
-    };
+  const handleEdit = (data: RowData) => {
+    console.log(data);
+    editQuestionFormAction.setValues({
+      questionContent: data.questionContent,
+      categoryName: data.categoryName,
+      answersEntity: data.answersEntity.map((answer) => {
+        return {
+          content: answer.content,
+          isCorrect: answer.isCorrect,
+        };
+      }),
+    });
   };
 
-  const setEditField = (category: RowData) => {
-    form.setFieldValue("categoryName", category.categoryName);
-  };
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
@@ -217,13 +178,15 @@ export default function Category() {
       arrowOffset={11}
       arrowSize={8}
       closeDelay={0}
+      key={row.questionId}
     >
       <Menu.Target>
-        <Table.Tr key={row.categoryId} className="cursor-pointer">
-          <Table.Td>{row.categoryId}</Table.Td>
-          <Table.Td>{row.categoryName}</Table.Td>
-          <Table.Td>{convertDate(row.createAt)}</Table.Td>
-          <Table.Td>{row.totalQuiz}</Table.Td>
+        <Table.Tr key={row.questionId} className="cursor-pointer">
+          <Table.Td>{row.questionId}</Table.Td>
+          <Table.Td>{row.questionContent}</Table.Td>
+          <Table.Td>{row.totalChoices}</Table.Td>
+          <Table.Td>{row.totalAnswers}</Table.Td>
+          <Table.Td>{convertDate(row.createdAt)}</Table.Td>
         </Table.Tr>
       </Menu.Target>
 
@@ -231,9 +194,8 @@ export default function Category() {
         <Menu.Item
           leftSection={<IconEdit size={14} />}
           onClick={() => {
-            cateData.current = row;
-            // setTestCategoryData(row);
-            setEditField(row);
+            setEditingData(row);
+            handleEdit(row);
             open();
           }}
         >
@@ -242,9 +204,7 @@ export default function Category() {
         <Menu.Item
           leftSection={<IconTrash size={14} />}
           color="red"
-          onClick={() => {
-            deleteUserModal(row, submit);
-          }}
+          onClick={() => deleteModal(row, submit)}
         >
           Delete
         </Menu.Item>
@@ -254,40 +214,19 @@ export default function Category() {
 
   return (
     <>
-      <Modal
+      <EditModal
         opened={opened}
-        onClose={close}
-        title={"Edit Category ID: " + cateData?.current?.categoryId}
-        centered
-      >
-        <Form
-          method="put"
-          onSubmit={form.onSubmit(() => {
-            submit(assignPayload(form.values.categoryName), { method: "put" });
-          })}
-        >
-          <Stack gap={"sm"}>
-            <TextInput
-              label="Category name"
-              placeholder="Enter category name"
-              name="categoryName"
-              {...form.getInputProps("categoryName")}
-            />
-            <Button type="submit" variant="filled" fullWidth>
-              Save
-            </Button>
-          </Stack>
-        </Form>
-      </Modal>
-      {/* <EditModal opened={opened} close={close} data={testCategoryData} /> */}
+        close={close}
+        editingData={editingData as RowData}
+      />
       <CreateModal opened={createOpened} close={closeCreate} />
       <div className="mt-[60px]">
         <div className="py-[20px] sticky top-[60px] bg-[--mantine-color-body]">
           <Stack>
             <div className="flex justify-between">
               <Text size="sm">
-                Available <strong>{data.length}</strong> categorie(s), click on
-                row to interact.
+                Available <strong>{data.length}</strong> questions, click on row
+                to interact.
               </Text>
               <Group>
                 <Button
@@ -332,32 +271,39 @@ export default function Category() {
           <Table.Thead>
             <Table.Tr>
               <Th
-                sorted={sortBy === "categoryId"}
+                sorted={sortBy === "questionId"}
                 reversed={reverseSortDirection}
-                onSort={() => setSorting("categoryId")}
+                onSort={() => setSorting("questionId")}
               >
                 ID
               </Th>
               <Th
-                sorted={sortBy === "categoryName"}
+                sorted={sortBy === "questionContent"}
                 reversed={reverseSortDirection}
-                onSort={() => setSorting("categoryName")}
+                onSort={() => setSorting("questionContent")}
               >
-                Category name
+                Content
               </Th>
               <Th
-                sorted={sortBy === "createAt"}
+                sorted={sortBy === "totalChoices"}
                 reversed={reverseSortDirection}
-                onSort={() => setSorting("createAt")}
+                onSort={() => setSorting("totalChoices")}
+              >
+                Total choices
+              </Th>
+              <Th
+                sorted={sortBy === "totalAnswers"}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting("totalAnswers")}
+              >
+                Total answers
+              </Th>
+              <Th
+                sorted={sortBy === "createdAt"}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting("createdAt")}
               >
                 Created at
-              </Th>
-              <Th
-                sorted={sortBy === "totalQuiz"}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting("totalQuiz")}
-              >
-                Total quizzes
               </Th>
             </Table.Tr>
           </Table.Thead>
@@ -379,3 +325,5 @@ export default function Category() {
     </>
   );
 }
+
+export default QuestionsBankList;

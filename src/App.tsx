@@ -11,10 +11,17 @@ import {
   handleUserDashboardAction,
 } from "./utils/user/UserUtils";
 import { getCategoriesList } from "./utils/category/CategoryUtils";
-import { UserList } from "./pages/admin/dashboard/all-user/UserList";
-import QuestionBank from "./pages/admin/dashboard/bank/QuestionBank";
-import CategoryList from "./pages/admin/dashboard/category/CategoryList";
-import { action as CategoryAction } from "./pages/admin/dashboard/category/CategoryList";
+import { UserList } from "./pages/admin/all-user/UserList";
+import QuestionsBank from "./pages/admin/bank/QuestionsBank";
+import CategoryList from "./pages/admin/category/CategoryList";
+import { action as CategoryAction } from "./pages/admin/category/CategoryList";
+import {
+  loader as QuestionsBankLoader,
+  action as QuestionsBankAction,
+} from "./pages/admin/bank/QuestionsBank";
+import GeneralDashboard, {
+  loader as GeneralDashboardLoader,
+} from "./pages/admin/dashboard/GeneralDashboard";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +36,11 @@ const router = createBrowserRouter([
     loader: checkAuth,
     children: [
       {
+        path: "general",
+        element: <GeneralDashboard />,
+        loader: GeneralDashboardLoader,
+      },
+      {
         path: "all-user",
         element: <UserList />,
         loader: getUsersList,
@@ -37,12 +49,15 @@ const router = createBrowserRouter([
       {
         path: "categories",
         element: <CategoryList />,
+        id: "categories-list",
         loader: getCategoriesList,
         action: CategoryAction,
       },
       {
         path: "questions-bank",
-        element: <QuestionBank />,
+        element: <QuestionsBank />,
+        loader: QuestionsBankLoader,
+        action: QuestionsBankAction,
       },
     ],
   },

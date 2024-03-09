@@ -1,5 +1,5 @@
 import axios from "axios";
-import Category from "../../../../components/category/Category";
+import Category from "../../../components/category/Category";
 
 function CategoryList() {
   return <Category />;

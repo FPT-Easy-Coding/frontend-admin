@@ -37,7 +37,7 @@ import {
 import { toast } from "react-toastify";
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
-import NewUser from "../../../../components/user-list/NewUser";
+import NewUser from "../../../components/user-list/NewUser";
 
 interface ActionData {
   success: boolean;
