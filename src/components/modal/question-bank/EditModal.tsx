@@ -9,7 +9,6 @@ import {
   Stack,
   TextInput,
   Title,
-  Text,
   Divider,
 } from "@mantine/core";
 import {
@@ -142,14 +141,12 @@ function EditModal({
             className="grow"
             {...form.getInputProps(`answersEntity.${index}.content`)}
           />
-          <Group>
-            <Checkbox
-              color="orange"
-              checked={form.values.answersEntity[index].isCorrect}
-              {...form.getInputProps(`answersEntity.${index}.isCorrect`)}
-            />
-            <Text className="text-sm font-bold">Correct</Text>
-          </Group>
+          <Checkbox
+            color="orange"
+            label="Correct"
+            checked={form.values.answersEntity[index].isCorrect}
+            {...form.getInputProps(`answersEntity.${index}.isCorrect`)}
+          />
         </Group>
       )}
     </Draggable>
