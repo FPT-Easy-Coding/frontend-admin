@@ -12,13 +12,19 @@ import {
   Text,
   Divider,
 } from "@mantine/core";
-import { TransformedValues, createFormActions, useForm } from "@mantine/form";
+import {
+  TransformedValues,
+  createFormActions,
+  isNotEmpty,
+  useForm,
+} from "@mantine/form";
 import { useEffect, useRef } from "react";
 import { Form, useNavigation, useSubmit } from "react-router-dom";
 import { getCategoriesList } from "../../../utils/category/CategoryUtils";
 import { RowData } from "../../../pages/admin/bank/QuestionsBank";
 import { IconGripVertical, IconMinus, IconPlus } from "@tabler/icons-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { toast } from "react-toastify";
 
 export interface CategoryData {
   categoryId: number;
@@ -59,6 +65,13 @@ function EditModal({
       categoryName: "",
       answersEntity: [],
     },
+    validate: {
+      questionContent: isNotEmpty("Question content is required"),
+      categoryName: isNotEmpty("Category is required"),
+      answersEntity: {
+        content: isNotEmpty("Answer content is required"),
+      },
+    },
     transformValues: (values) => ({
       questionId: editingData.questionId,
       categoryId: (() => {
@@ -83,23 +96,40 @@ function EditModal({
   }
 
   const handleSubmit = (values: Transformed) => {
-    submit(
-      {
-        ...values,
-        answersEntity: (() => {
-          const answers = values.answersEntity?.map((answer) => {
-            return {
-              content: answer.content,
-              isCorrect: answer.isCorrect,
-            };
-          });
-          return JSON.stringify(answers);
-        })(),
-      },
-      { method: "put" }
-    );
+    const hasCorrectAnswer = values.answersEntity.find((answer) => {
+      return answer.isCorrect;
+    });
+    const totalChoices = values.answersEntity.length;
+    if (!hasCorrectAnswer) {
+      values.answersEntity.map((_, index) => {
+        form.setFieldError(
+          `answersEntity.${index}.content`,
+          "At least one correct answer is required"
+        );
+        form.setFieldError(`answersEntity.${index}.isCorrect`, true);
+      });
+      toast.info("At least one correct answer is required");
+      return;
+    } else if (totalChoices < 2) {
+      toast.info("At least two choices are required");
+    } else {
+      submit(
+        {
+          ...values,
+          answersEntity: (() => {
+            const answers = values.answersEntity?.map((answer) => {
+              return {
+                content: answer.content,
+                isCorrect: answer.isCorrect,
+              };
+            });
+            return JSON.stringify(answers);
+          })(),
+        },
+        { method: "put" }
+      );
+    }
   };
-
   const answers = form.values.answersEntity?.map((_, index) => (
     <Draggable key={index} draggableId={index.toString()} index={index}>
       {(provided) => (

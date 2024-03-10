@@ -13,12 +13,13 @@ import {
   Button,
   Text,
 } from "@mantine/core";
-import { useForm, TransformedValues } from "@mantine/form";
+import { useForm, TransformedValues, isNotEmpty } from "@mantine/form";
 import { IconGripVertical, IconPlus, IconMinus } from "@tabler/icons-react";
 import { useRef, useEffect } from "react";
 import { useSubmit, useNavigation, Form } from "react-router-dom";
 import { getCategoriesList } from "../../../utils/category/CategoryUtils";
 import { CategoryData, EditQuestionFormData } from "./EditModal";
+import { toast } from "react-toastify";
 
 function CreateModal({
   opened,
@@ -51,7 +52,19 @@ function CreateModal({
     initialValues: {
       questionContent: "",
       categoryName: "",
-      answersEntity: [],
+      answersEntity: [
+        {
+          content: "",
+          isCorrect: false,
+        },
+      ],
+    },
+    validate: {
+      questionContent: isNotEmpty("Question content is required"),
+      categoryName: isNotEmpty("Category is required"),
+      answersEntity: {
+        content: isNotEmpty("Answer content is required"),
+      },
     },
     transformValues: (values) => ({
       categoryId: (() => {
@@ -67,21 +80,39 @@ function CreateModal({
   type Transformed = TransformedValues<typeof form>;
 
   const handleSubmit = (values: Transformed) => {
-    submit(
-      {
-        ...values,
-        answersEntity: (() => {
-          const answers = values.answersEntity?.map((answer) => {
-            return {
-              content: answer.content,
-              isCorrect: answer.isCorrect,
-            };
-          });
-          return JSON.stringify(answers);
-        })(),
-      },
-      { method: "post" }
-    );
+    const hasCorrectAnswer = values.answersEntity.find((answer) => {
+      return answer.isCorrect;
+    });
+    const totalChoices = values.answersEntity.length;
+    if (!hasCorrectAnswer) {
+      values.answersEntity.map((_, index) => {
+        form.setFieldError(
+          `answersEntity.${index}.content`,
+          "At least one correct answer is required"
+        );
+        form.setFieldError(`answersEntity.${index}.isCorrect`, true);
+      });
+      toast.info("At least one correct answer is required");
+      return;
+    } else if (totalChoices < 2) {
+      toast.info("At least two choices are required");
+    } else {
+      submit(
+        {
+          ...values,
+          answersEntity: (() => {
+            const answers = values.answersEntity?.map((answer) => {
+              return {
+                content: answer.content,
+                isCorrect: answer.isCorrect,
+              };
+            });
+            return JSON.stringify(answers);
+          })(),
+        },
+        { method: "post" }
+      );
+    }
   };
 
   const answers = form.values.answersEntity?.map((_, index) => (

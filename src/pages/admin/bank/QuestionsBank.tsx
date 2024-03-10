@@ -96,13 +96,13 @@ export async function action({ request }: { request: Request }) {
     const payload = {
       PUT: {
         questionId: Number(questionId),
-        categoryId: Number(categoryId) && 0,
-        questionContent: questionContent && "",
+        categoryId: Number(categoryId),
+        questionContent: questionContent,
         answersEntity: answersEntity ? JSON.parse(answersEntity) : "",
       },
       POST: {
-        categoryId: Number(categoryId) && 0,
-        questionContent: questionContent && "",
+        categoryId: Number(categoryId),
+        questionContent: questionContent,
         answersEntity: answersEntity ? JSON.parse(answersEntity) : "",
       },
     };

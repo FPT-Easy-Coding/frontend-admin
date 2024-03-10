@@ -179,6 +179,11 @@ function QuestionsBankList() {
       arrowSize={8}
       closeDelay={0}
       key={row.questionId}
+      styles={{
+        dropdown: {
+          boxShadow: "var(--mantine-shadow-xl)",
+        },
+      }}
     >
       <Menu.Target>
         <Table.Tr key={row.questionId} className="cursor-pointer">
