@@ -25,6 +25,7 @@ import {
   IconBrandAsana,
   IconSun,
   IconMoonStars,
+  IconLayoutDashboard
 } from "@tabler/icons-react";
 import { MantineLogo } from "@mantinex/mantine-logo";
 import classes from "./Navbar.module.css";
@@ -62,6 +63,7 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 }
 
 const mockdata = [
+  { icon: IconLayoutDashboard, label: "General-Dashboard", linkTo: "general-dashboard" },
   { icon: IconCategory, label: "Categories", linkTo: "categories" },
   { icon: IconUsers, label: "Users", linkTo: "all-user" },
   { icon: IconBrandAsana, label: "Question Bank", linkTo: "questions-bank" },

@@ -15,6 +15,7 @@ import { UserList } from "./pages/admin/dashboard/all-user/UserList";
 import QuestionBank from "./pages/admin/dashboard/bank/QuestionBank";
 import CategoryList from "./pages/admin/dashboard/category/CategoryList";
 import { action as CategoryAction } from "./pages/admin/dashboard/category/CategoryList";
+import GeneralDashboard from "./pages/admin/dashboard/general-dashboard/GeneralDashboard";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
         element: <UserList />,
         loader: getUsersList,
         action: handleUserDashboardAction,
+      },
+      {
+        path: "general-dashboard",
+        element: <GeneralDashboard />,
       },
       {
         path: "categories",
