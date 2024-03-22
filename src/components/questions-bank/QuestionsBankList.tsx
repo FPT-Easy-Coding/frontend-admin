@@ -127,7 +127,6 @@ function QuestionsBankList() {
   };
 
   const handleEdit = (data: RowData) => {
-    console.log(data);
     editQuestionFormAction.setValues({
       questionContent: data.questionContent,
       categoryName: data.categoryName,

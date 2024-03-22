@@ -98,6 +98,9 @@ function EditModal({
     const hasCorrectAnswer = values.answersEntity.find((answer) => {
       return answer.isCorrect;
     });
+    const isAllAnswersCorrect = values.answersEntity.every(
+      (answer) => answer.isCorrect
+    );
     const totalChoices = values.answersEntity.length;
     if (!hasCorrectAnswer) {
       values.answersEntity.map((_, index) => {
@@ -111,6 +114,15 @@ function EditModal({
       return;
     } else if (totalChoices < 2) {
       toast.info("At least two choices are required");
+    } else if (isAllAnswersCorrect) {
+      values.answersEntity.map((_, index) => {
+        form.setFieldError(
+          `answersEntity.${index}.content`,
+          "One question cannot have all choices correct!"
+        );
+        form.setFieldError(`answersEntity.${index}.isCorrect`, true);
+      });
+      toast.info("One question cannot have all choices correct!");
     } else {
       submit(
         {
